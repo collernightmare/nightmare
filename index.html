@@ -1,33 +1,240 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>РУЛЕТКА</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КРУТАЯ РУЛЕТКА</title>
     <style>
-        body { display: flex; flex-direction: column; align-items: center; font-family: Arial; background: #f0f0f0; }
-        #roulette { width: 250px; height: 250px; border-radius: 50%; margin: 30px; display: flex; 
-                   align-items: center; justify-content: center; font-size: 32px; font-weight: bold; 
-                   transition: transform 2s; border: 5px solid white; box-shadow: 0 0 20px rgba(0,0,0,0.3); }
-        button { padding: 15px 30px; font-size: 20px; cursor: pointer; background: #4CAF50; 
-                color: white; border: none; border-radius: 10px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+            color: white;
+            padding: 20px;
+        }
+
+        h1 {
+            margin: 30px 0;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        #roulette {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            margin: 20px;
+            overflow: hidden;
+            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            background: #2ecc71;
+            border: 5px solid #fff;
+            box-shadow: 0 0 30px rgba(46, 204, 113, 0.5);
+        }
+
+        .number {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            transform-origin: 150px 150px;
+        }
+
+        .red { background: #e74c3c; }
+        .black { background: #2c3e50; }
+        .green { background: #2ecc71; }
+
+        button {
+            padding: 15px 40px;
+            font-size: 20px;
+            cursor: pointer;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            margin: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #e74c3c;
+        }
+
+        button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        #stats {
+            margin: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: #34495e;
+            margin: 15% auto;
+            padding: 30px;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 15px;
+            text-align: center;
+            animation: modalShow 0.3s;
+        }
+
+        @keyframes modalShow {
+            from {transform: scale(0.5); opacity: 0;}
+            to {transform: scale(1); opacity: 1;}
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            #roulette {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .number {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+                transform-origin: 125px 125px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>РУЛЕТКА</h1>
-    <div id="roulette" style="background-color: green;">START</div>
-    <button onclick="spin()">Крутить!</button>
+    <h1>КРУТАЯ РУЛЕТКА</h1>
+    
+    <div id="roulette">
+        <!-- Числа рулетки -->
+        <div class="number green" style="transform: rotate(0deg)">0</div>
+        <div class="number red" style="transform: rotate(30deg)">32</div>
+        <div class="number black" style="transform: rotate(60deg)">15</div>
+        <div class="number red" style="transform: rotate(90deg)">19</div>
+        <div class="number black" style="transform: rotate(120deg)">4</div>
+        <div class="number red" style="transform: rotate(150deg)">21</div>
+        <div class="number black" style="transform: rotate(180deg)">2</div>
+        <div class="number red" style="transform: rotate(210deg)">25</div>
+        <div class="number black" style="transform: rotate(240deg)">17</div>
+        <div class="number red" style="transform: rotate(270deg)">34</div>
+        <div class="number black" style="transform: rotate(300deg)">6</div>
+        <div class="number red" style="transform: rotate(330deg)">27</div>
+    </div>
+
+    <button onclick="spin()">КРУТИТЬ!</button>
+
+    <div id="stats">
+        🏆 Побед: <span id="wins">0</span><br>
+        💣 Поражений: <span id="losses">0</span>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p id="resultText" style="font-size: 24px; margin: 20px 0;"></p>
+            <img id="resultImage" style="width: 100px; height: 100px; margin: 10px;">
+        </div>
+    </div>
+
+    <!-- Звуки -->
+    <audio id="spinSound" src="https://cdn.pixabay.com/download/audio/2022/11/15/audio_ecb4d3d148.mp3"></audio>
+    <audio id="winSound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0d2d97d2a7.mp3"></audio>
+
     <script>
+        let wins = 0, losses = 0;
+        const roulette = document.getElementById('roulette');
+        const modal = document.getElementById('resultModal');
+        const resultText = document.getElementById('resultText');
+        const resultImage = document.getElementById('resultImage');
+
         function spin() {
-            const roulette = document.getElementById('roulette');
             const button = event.target;
-            button.disabled = true; 
+            button.disabled = true;
+            
+            // Звук вращения
+            document.getElementById('spinSound').play();
+            
+            // Случайное вращение
+            const randomRotations = 1440 + Math.random() * 360;
+            roulette.style.transform = `rotate(${randomRotations}deg)`;
+
+            // Определение результата
             const result = Math.random() < 0.5 ? 'red' : 'black';
-            roulette.style.transform = 'rotate(1440deg)';
-            roulette.style.backgroundColor = result;
+
             setTimeout(() => {
                 roulette.style.transform = 'rotate(0deg)';
                 button.disabled = false;
-                alert(result === 'red' ? '🍎 Красное!' : '🖤 Черное!');
-            }, 2000);
+                
+                // Обновление статистики
+                result === 'red' ? wins++ : losses++;
+                document.getElementById('wins').textContent = wins;
+                document.getElementById('losses').textContent = losses;
+
+                // Показ модального окна
+                showResult(result);
+            }, 3000);
+        }
+
+        function showResult(result) {
+            // Звук результата
+            document.getElementById('winSound').play();
+            
+            // Установка текста и изображения
+            resultText.textContent = result === 'red' ? '🍎 КРАСНОЕ ПОБЕДИЛО!' : '🖤 ЧЕРНОЕ ПОБЕДИЛО!';
+            resultImage.src = result === 'red' 
+                ? 'https://cdn-icons-png.flaticon.com/512/1087/1087840.png' 
+                : 'https://cdn-icons-png.flaticon.com/512/1087/1087816.png';
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 </body>
