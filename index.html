@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>РУЛЕТКА</title>
+    <style>
+        body { display: flex; flex-direction: column; align-items: center; font-family: Arial; background: #f0f0f0; }
+        #roulette { width: 250px; height: 250px; border-radius: 50%; margin: 30px; display: flex; 
+                   align-items: center; justify-content: center; font-size: 32px; font-weight: bold; 
+                   transition: transform 2s; border: 5px solid white; box-shadow: 0 0 20px rgba(0,0,0,0.3); }
+        button { padding: 15px 30px; font-size: 20px; cursor: pointer; background: #4CAF50; 
+                color: white; border: none; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>РУЛЕТКА</h1>
+    <div id="roulette" style="background-color: green;">START</div>
+    <button onclick="spin()">Крутить!</button>
+    <script>
+        function spin() {
+            const roulette = document.getElementById('roulette');
+            const button = event.target;
+            button.disabled = true; 
+            const result = Math.random() < 0.5 ? 'red' : 'black';
+            roulette.style.transform = 'rotate(1440deg)';
+            roulette.style.backgroundColor = result;
+            setTimeout(() => {
+                roulette.style.transform = 'rotate(0deg)';
+                button.disabled = false;
+                alert(result === 'red' ? '🍎 Красное!' : '🖤 Черное!');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
