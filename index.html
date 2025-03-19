@@ -2,212 +2,173 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Казино Рулетка</title>
+    <title>Рулетка с историей ставок</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
             background: #1a1a1a;
             color: white;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
         }
 
-        .auth-form {
+        .roulette-container {
+            position: relative;
+            width: 600px;
             background: #2d2d2d;
             padding: 20px;
             border-radius: 10px;
-            margin: 20px 0;
         }
 
-        .game-container {
-            display: none;
+        .history {
+            width: 200px;
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .wheel {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: linear-gradient(0deg, #2ecc71, #27ae60);
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .number {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transform-origin: 200px 200px;
+        }
+
+        .bet-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #34495e;
+            border-radius: 8px;
+        }
+
+        .bet-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .history-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #34495e;
+            border-radius: 5px;
+            font-size: 14px;
         }
 
         input {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 8px;
+            margin: 5px;
             border-radius: 5px;
             border: 1px solid #444;
             background: #333;
             color: white;
         }
-
-        button {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-        }
-
-        button:hover {
-            background: #219a52;
-        }
-
-        #roulette {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            margin: 20px auto;
-            background: green;
-            transition: transform 2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-        }
-
-        .balance {
-            font-size: 24px;
-            margin: 20px 0;
-            color: #27ae60;
-        }
-
-        .bet-panel {
-            margin: 20px 0;
-        }
     </style>
 </head>
 <body>
-    <!-- Форма авторизации -->
-    <div class="auth-form" id="authForm">
-        <h2>Вход/Регистрация</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Пароль">
-        <button onclick="login()">Войти</button>
-        <button onclick="register()">Зарегистрироваться</button>
+    <div class="roulette-container">
+        <div class="wheel" id="wheel">
+            <!-- Числа рулетки -->
+            <div class="number" style="transform: rotate(0deg) translate(150px)">0</div>
+            <div class="number" style="transform: rotate(30deg) translate(150px)">32</div>
+            <div class="number" style="transform: rotate(60deg) translate(150px)">15</div>
+            <div class="number" style="transform: rotate(90deg) translate(150px)">19</div>
+            <!-- Добавьте остальные числа по аналогии -->
+        </div>
+
+        <div class="bet-section">
+            <input type="text" id="playerName" placeholder="Ваше имя">
+            <input type="number" id="betAmount" placeholder="Сумма ставки">
+            
+            <h4>Множители:</h4>
+            <button class="bet-button" data-multiplier="2">2x</button>
+            <button class="bet-button" data-multiplier="3">3x</button>
+            <button class="bet-button" data-multiplier="5">5x</button>
+            <button class="bet-button" data-multiplier="10">10x</button>
+            
+            <button onclick="placeBet()" style="background: #e67e22">Сделать ставку</button>
+        </div>
     </div>
 
-    <!-- Игровой интерфейс -->
-    <div class="game-container" id="gameContainer">
-        <div class="balance">
-            Баланс: $<span id="currentBalance">0</span>
-        </div>
-
-        <div class="bet-panel">
-            <input type="number" id="betAmount" placeholder="Сумма ставки">
-            <button onclick="placeBet()">Сделать ставку</button>
-        </div>
-
-        <div id="roulette">РУЛЕТКА</div>
-        <button onclick="logout()">Выйти</button>
-        
-        <!-- Кнопка пополнения (нерабочая) -->
-        <button style="background: #7f8c8d" onclick="alert('Пополнение временно недоступно')">
-            Пополнить баланс
-        </button>
+    <div class="history" id="history">
+        <h3>История ставок</h3>
+        <div id="historyList"></div>
     </div>
 
     <script>
-        let currentUser = null;
+        let currentMultiplier = 1;
+        const history = [];
+        
+        function spinWheel() {
+            const wheel = document.getElementById('wheel');
+            const randomRotation = 1440 + Math.random() * 360;
+            wheel.style.transform = `rotate(${randomRotation}deg)`;
+        }
 
-        // Загрузка пользователя при открытии страницы
-        function loadUser() {
-            const user = localStorage.getItem('currentUser');
-            if(user) {
-                currentUser = JSON.parse(user);
-                showGameInterface();
+        function updateHistory(playerName, betAmount, multiplier) {
+            const historyList = document.getElementById('historyList');
+            const result = Math.floor(Math.random() * 37);
+            
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <strong>${playerName}</strong><br>
+                Ставка: $${betAmount} на ${multiplier}x<br>
+                Результат: ${result}
+            `;
+            
+            historyList.prepend(historyItem);
+            history.push({ playerName, betAmount, multiplier, result });
+            
+            if(history.length > 10) {
+                historyList.lastChild.remove();
             }
         }
 
-        // Показать игровой интерфейс
-        function showGameInterface() {
-            document.getElementById('authForm').style.display = 'none';
-            document.getElementById('gameContainer').style.display = 'block';
-            document.getElementById('currentBalance').textContent = currentUser.balance.toLocaleString();
-        }
-
-        // Регистрация
-        function register() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if(!email || !password) {
+        function placeBet() {
+            const playerName = document.getElementById('playerName').value;
+            const betAmount = document.getElementById('betAmount').value;
+            
+            if(!playerName || !betAmount) {
                 alert('Заполните все поля!');
                 return;
             }
-
-            const user = {
-                email,
-                password, // В реальном проекте никогда так не храните пароли!
-                balance: 100000
-            };
-
-            localStorage.setItem(email, JSON.stringify(user));
-            alert('Регистрация успешна!');
-        }
-
-        // Вход
-        function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const user = JSON.parse(localStorage.getItem(email));
-
-            if(user && user.password === password) {
-                currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                showGameInterface();
-            } else {
-                alert('Неверные данные!');
-            }
-        }
-
-        // Выход
-        function logout() {
-            localStorage.removeItem('currentUser');
-            location.reload();
-        }
-
-        // Сделать ставку
-        function placeBet() {
-            const betAmount = parseInt(document.getElementById('betAmount').value);
             
-            if(!betAmount || betAmount <= 0) {
-                alert('Введите сумму ставки!');
-                return;
-            }
-
-            if(betAmount > currentUser.balance) {
-                alert('Недостаточно средств!');
-                return;
-            }
-
-            spinRoulette(betAmount);
+            spinWheel();
+            updateHistory(playerName, betAmount, currentMultiplier);
         }
 
-        // Вращение рулетки
-        function spinRoulette(betAmount) {
-            const roulette = document.getElementById('roulette');
-            roulette.style.transform = 'rotate(1440deg)';
-            
-            setTimeout(() => {
-                const result = Math.random() < 0.5 ? 'red' : 'black';
-                roulette.style.backgroundColor = result;
-                
-                if(result === 'red') {
-                    currentUser.balance += betAmount;
-                    alert(`Вы выиграли $${betAmount}!`);
-                } else {
-                    currentUser.balance -= betAmount;
-                    alert(`Вы проиграли $${betAmount}!`);
-                }
-
-                // Обновление данных
-                localStorage.setItem(currentUser.email, JSON.stringify(currentUser));
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                document.getElementById('currentBalance').textContent = currentUser.balance.toLocaleString();
-                roulette.style.transform = 'rotate(0deg)';
-            }, 2000);
-        }
-
-        // Загружаем пользователя при загрузке страницы
-        window.onload = loadUser;
+        // Обработчики множителей
+        document.querySelectorAll('.bet-button').forEach(button => {
+            button.addEventListener('click', () => {
+                currentMultiplier = parseFloat(button.dataset.multiplier);
+                document.querySelectorAll('.bet-button').forEach(b => 
+                    b.style.background = '#27ae60');
+                button.style.background = '#e67e22';
+            });
+        });
     </script>
 </body>
 </html>
