@@ -30,6 +30,11 @@
             padding: 2rem;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
+        /* Форма авторизации */
         .auth-card {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -39,7 +44,6 @@
             max-width: 400px;
             box-shadow: 0 0 30px rgba(5,217,232,0.2);
             border: 1px solid var(--neon-blue);
-            margin-bottom: 3rem;
         }
 
         .auth-card h1 {
@@ -67,11 +71,6 @@
             transition: all 0.3s;
         }
 
-        .input-group input:focus {
-            outline: none;
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-
         .btn {
             width: 100%;
             padding: 1rem;
@@ -89,9 +88,10 @@
             box-shadow: 0 0 20px rgba(255,42,109,0.3);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px var(--neon-red);
+        /* Игровой интерфейс */
+        #gameInterface {
+            width: 100%;
+            max-width: 800px;
         }
 
         .balance-card {
@@ -101,34 +101,13 @@
             margin: 2rem 0;
             position: relative;
             overflow: hidden;
-        }
-
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 48%,
-                var(--neon-blue) 50%,
-                transparent 52%
-            );
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-50%) rotate(45deg); }
-            100% { transform: translateX(50%) rotate(45deg); }
+            text-align: center;
         }
 
         .roulette-container {
             width: 300px;
             height: 300px;
-            position: relative;
-            margin: 2rem 0;
+            margin: 2rem auto;
         }
 
         .roulette-wheel {
@@ -150,6 +129,7 @@
             gap: 1rem;
             width: 100%;
             max-width: 400px;
+            margin: 2rem auto;
         }
 
         .bet-btn {
@@ -173,8 +153,6 @@
         }
 
         .crash-container {
-            width: 100%;
-            max-width: 600px;
             background: var(--glass);
             padding: 2rem;
             border-radius: 20px;
@@ -202,7 +180,7 @@
 </head>
 <body>
     <!-- Форма авторизации -->
-    <div class="auth-card">
+    <div class="auth-card" id="authCard">
         <h1>NEON CASINO</h1>
         <div class="input-group">
             <input type="email" placeholder="Email" id="email">
@@ -215,45 +193,88 @@
     </div>
 
     <!-- Игровой интерфейс -->
-    <div class="balance-card">
-        <h2>Баланс: $<span id="balance">0</span></h2>
-    </div>
-
-    <div class="roulette-container">
-        <div class="roulette-wheel" id="roulette"></div>
-    </div>
-
-    <div class="bet-buttons">
-        <button class="bet-btn red" onclick="placeBet('red')">Красное x2</button>
-        <button class="bet-btn black" onclick="placeBet('black')">Черное x2</button>
-    </div>
-
-    <div class="crash-container">
-        <h2>Crash</h2>
-        <div class="crash-graph">
-            <div class="crash-line" id="crashLine"></div>
-            <div id="crashMultiplier" style="position: absolute; right: 20px; top: 20px; font-size: 2em; color: var(--neon-blue);">1.00x</div>
+    <div id="gameInterface" class="hidden">
+        <div class="balance-card">
+            <h2>Баланс: $<span id="balance">0</span></h2>
         </div>
-        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-            <input type="number" id="crashBet" placeholder="Сумма" style="flex:1; padding: 1rem; border-radius: 10px; background: rgba(0,0,0,0.3); border: 2px solid var(--neon-blue); color: var(--text);">
-            <button class="btn btn-primary" onclick="startCrash()" id="crashButton">Старт</button>
-            <button class="btn btn-primary" onclick="cashOut()" id="cashOutButton" style="display: none;">Забрать</button>
+
+        <div class="roulette-container">
+            <div class="roulette-wheel" id="roulette"></div>
+        </div>
+
+        <div class="bet-buttons">
+            <button class="bet-btn red" onclick="placeBet('red')">Красное x2</button>
+            <button class="bet-btn black" onclick="placeBet('black')">Черное x2</button>
+        </div>
+
+        <div class="crash-container">
+            <h2>Crash</h2>
+            <div class="crash-graph">
+                <div class="crash-line" id="crashLine"></div>
+                <div id="crashMultiplier" style="position: absolute; right: 20px; top: 20px; font-size: 2em; color: var(--neon-blue);">1.00x</div>
+            </div>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <input type="number" id="crashBet" placeholder="Сумма" style="flex:1; padding: 1rem; border-radius: 10px; background: rgba(0,0,0,0.3); border: 2px solid var(--neon-blue); color: var(--text);">
+                <button class="btn btn-primary" onclick="startCrash()" id="crashButton">Старт</button>
+                <button class="btn btn-primary" onclick="cashOut()" id="cashOutButton" class="hidden">Забрать</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Игровая логика
         let currentUser = null;
         let crashMultiplier = 1.0;
         let crashInterval;
 
+        // Регистрация
+        function register() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const user = {
+                email,
+                password,
+                balance: 0,
+                history: []
+            };
+
+            localStorage.setItem(email, JSON.stringify(user));
+            alert('Регистрация успешна! Войдите в аккаунт');
+        }
+
+        // Вход
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const user = JSON.parse(localStorage.getItem(email));
+
+            if(user && user.password === password) {
+                currentUser = user;
+                document.getElementById('authCard').classList.add('hidden');
+                document.getElementById('gameInterface').classList.remove('hidden');
+                updateBalance();
+            } else {
+                alert('Неверные данные!');
+            }
+        }
+
+        // Обновление баланса
+        function updateBalance() {
+            document.getElementById('balance').textContent = currentUser.balance;
+            localStorage.setItem(currentUser.email, JSON.stringify(currentUser));
+        }
+
+        // Рулетка
         function placeBet(color) {
-            const amount = prompt('Введите сумму ставки:');
+            const amount = Number(prompt('Введите сумму ставки:'));
             if(!amount || amount > currentUser.balance) return alert('Ошибка!');
             
-            const wheel = document.getElementById('roulette');
-            wheel.style.transform = `rotate(${1440 + Math.random() * 360}deg`;
+            currentUser.balance -= amount;
+            updateBalance();
             
+            const wheel = document.getElementById('roulette');
+            wheel.style.transform = `rotate(${1440 + Math.random() * 360}deg)`;
+
             setTimeout(() => {
                 const result = Math.random() < 0.5 ? 'red' : 'black';
                 if(result === color) {
@@ -266,13 +287,17 @@
             }, 3000);
         }
 
+        // Crash игра
         function startCrash() {
-            const amount = document.getElementById('crashBet').value;
+            const amount = Number(document.getElementById('crashBet').value);
             if(!amount || amount > currentUser.balance) return alert('Ошибка!');
             
+            currentUser.balance -= amount;
+            updateBalance();
+            
             crashMultiplier = 1.0;
-            document.getElementById('crashButton').style.display = 'none';
-            document.getElementById('cashOutButton').style.display = 'block';
+            document.getElementById('crashButton').classList.add('hidden');
+            document.getElementById('cashOutButton').classList.remove('hidden');
             
             crashInterval = setInterval(() => {
                 crashMultiplier += 0.01;
@@ -291,60 +316,33 @@
 
         function endCrash(success) {
             clearInterval(crashInterval);
-            const amount = document.getElementById('crashBet').value;
+            const amount = Number(document.getElementById('crashBet').value);
+            
             if(success) {
                 currentUser.balance += amount * crashMultiplier;
                 alert(`Успех! x${crashMultiplier.toFixed(2)}`);
             }
+            
             updateBalance();
             document.getElementById('crashLine').style.width = '0';
-            document.getElementById('crashButton').style.display = 'block';
-            document.getElementById('cashOutButton').style.display = 'none';
+            document.getElementById('crashButton').classList.remove('hidden');
+            document.getElementById('cashOutButton').classList.add('hidden');
         }
 
-        // Система пользователя
-        function register() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            const user = {
-                email,
-                password,
-                balance: 0,
-                history: []
-            };
-
-            localStorage.setItem(email, JSON.stringify(user));
-            alert('Регистрация успешна!');
-            login();
-        }
-
-        function login() {
-            const email = document.getElementById('email').value;
-            const user = JSON.parse(localStorage.getItem(email));
-            
-            if(user && user.password === document.getElementById('password').value) {
-                currentUser = user;
-                document.querySelector('.auth-card').style.display = 'none';
-                updateBalance();
-            } else {
-                alert('Ошибка входа!');
-            }
-        }
-
-        function updateBalance() {
-            document.getElementById('balance').textContent = currentUser.balance;
-            localStorage.setItem(currentUser.email, JSON.stringify(currentUser));
-        }
-
-        // Админская команда для пополнения
-        window.addBalance = (email, amount) => {
+        // Админская команда для пополнения баланса
+        window.addBalance = function(email, amount) {
             const user = JSON.parse(localStorage.getItem(email));
             if(user) {
                 user.balance += amount;
                 localStorage.setItem(email, JSON.stringify(user));
-                console.log(`Баланс ${email} пополнен на $${amount}`);
+                alert(`Баланс ${email} пополнен на $${amount}`);
             }
+        }
+
+        // Инициализация
+        window.onload = () => {
+            document.getElementById('gameInterface').classList.add('hidden');
+            document.getElementById('authCard').classList.remove('hidden');
         }
     </script>
 </body>
