@@ -226,7 +226,7 @@
         let crashMultiplier = 1.0;
         let crashInterval;
 
-        // Регистрация
+        // Регистрация (стартовый баланс 20000)
         function register() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -234,7 +234,7 @@
             const user = {
                 email,
                 password,
-                balance: 0,
+                balance: 20000, // Начальный баланс 20,000$
                 history: []
             };
 
@@ -260,7 +260,7 @@
 
         // Обновление баланса
         function updateBalance() {
-            document.getElementById('balance').textContent = currentUser.balance;
+            document.getElementById('balance').textContent = currentUser.balance.toLocaleString();
             localStorage.setItem(currentUser.email, JSON.stringify(currentUser));
         }
 
@@ -327,16 +327,6 @@
             document.getElementById('crashLine').style.width = '0';
             document.getElementById('crashButton').classList.remove('hidden');
             document.getElementById('cashOutButton').classList.add('hidden');
-        }
-
-        // Админская команда для пополнения баланса
-        window.addBalance = function(email, amount) {
-            const user = JSON.parse(localStorage.getItem(email));
-            if(user) {
-                user.balance += amount;
-                localStorage.setItem(email, JSON.stringify(user));
-                alert(`Баланс ${email} пополнен на $${amount}`);
-            }
         }
 
         // Инициализация
