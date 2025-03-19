@@ -3,335 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Casino</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Premium Casino</title>
     <style>
         :root {
-            --primary: #2A2F4D;
-            --accent: #FF6B6B;
-            --background: #1A1A24;
+            --primary: #2a2f4d;
+            --accent: #ff6b6b;
+            --background: #1a1a24;
             --glass: rgba(255,255,255,0.05);
-            --text: #F4F4F8;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
         }
 
         body {
+            font-family: Arial, sans-serif;
             background: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
+            color: white;
+            margin: 0;
+            padding: 20px;
         }
 
-        /* Частицы */
-        #particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Шапка */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3rem;
-            padding: 1.5rem;
+        .auth-form, .game-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
             background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-radius: 10px;
         }
 
-        /* Баланс */
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary), #3A3F5D);
-            padding: 1.5rem 2rem;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: transform 0.3s;
-        }
-
-        /* Режимы игры */
-        .modes-tabs {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .mode-btn {
-            background: none;
-            border: 2px solid var(--glass);
-            color: var(--text);
-            padding: 0.8rem 1.5rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        /* Основной игровой интерфейс */
-        .game-grid {
-            display: grid;
-            grid-template-columns: 3fr 1fr;
-            gap: 2rem;
-        }
-
-        /* Рулетка */
-        .roulette-glass {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border-radius: 25px;
-            padding: 2rem;
-            position: relative;
+        .balance-section {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 24px;
         }
 
         .roulette-wheel {
-            width: 500px;
-            height: 500px;
-            margin: 0 auto;
-            position: relative;
+            width: 400px;
+            height: 400px;
             border-radius: 50%;
-            background: conic-gradient(#FF6B6B, #2A2F4D 30deg, #FF6B6B 60deg, #2A2F4D 90deg, #FF6B6B 120deg, #2A2F4D 150deg, #FF6B6B 180deg, #2A2F4D 210deg, #FF6B6B 240deg, #2A2F4D 270deg, #FF6B6B 300deg, #2A2F4D 330deg);
-            transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
+            margin: 20px auto;
+            position: relative;
+            background: green;
+            transition: transform 3s;
         }
 
-        /* Панель ставок */
-        .bet-controls {
-            background: var(--glass);
-            padding: 2rem;
-            border-radius: 20px;
+        .number {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transform-origin: 200px 200px;
         }
 
-        /* Режим Crash */
-        .crash-container {
-            display: none;
-            background: var(--glass);
-            padding: 2rem;
-            border-radius: 25px;
+        .red { background: #e74c3c; }
+        .black { background: #2c3e50; }
+        .green { background: #2ecc71; }
+
+        .bet-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .bet-button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
         }
 
         .crash-graph {
-            height: 300px;
+            height: 200px;
             background: #34495e;
-            border-radius: 20px;
-            margin: 2rem 0;
+            border-radius: 10px;
+            margin: 20px 0;
             position: relative;
+            overflow: hidden;
         }
 
-        /* История */
-        .history {
-            background: var(--glass);
-            padding: 2rem;
-            border-radius: 20px;
-            margin-top: 2rem;
+        .crash-line {
+            height: 4px;
+            background: var(--accent);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            transition: width 0.1s linear;
         }
     </style>
 </head>
 <body>
-    <canvas id="particles"></canvas>
-    
-    <div class="container">
-        <header class="header">
-            <div class="balance-card">
-                <div class="balance">💰 $<span id="balance">100,000</span></div>
-            </div>
-            <nav class="modes-tabs">
-                <button class="mode-btn active" data-mode="roulette">Рулетка</button>
-                <button class="mode-btn" data-mode="crash">Crash</button>
-            </nav>
-        </header>
+    <!-- Авторизация -->
+    <div class="auth-form" id="authForm">
+        <h2>Вход / Регистрация</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Пароль">
+        <button onclick="login()">Войти</button>
+        <button onclick="register()">Зарегистрироваться</button>
+    </div>
 
-        <!-- Режим Рулетки -->
-        <div class="game-grid" id="rouletteMode">
-            <div class="roulette-glass">
-                <div class="roulette-wheel" id="rouletteWheel"></div>
-            </div>
-            <div class="bet-controls">
-                <input type="number" id="betAmount" placeholder="Сумма ставки">
-                <div class="quick-bets">
-                    <button class="bet-chip" data-amount="1">+1</button>
-                    <button class="bet-chip" data-amount="10">+10</button>
-                    <button class="bet-chip" data-amount="100">+100</button>
-                    <button class="bet-chip" data-amount="1000">+1k</button>
-                </div>
-                <button class="place-bet-btn" id="placeBet">Сделать ставку</button>
-            </div>
+    <!-- Игровая зона -->
+    <div class="game-container hidden" id="gameContainer">
+        <div class="balance-section">
+            Баланс: $<span id="balance">0</span>
         </div>
 
-        <!-- Режим Crash -->
-        <div class="crash-container" id="crashMode">
-            <div class="crash-graph" id="crashGraph"></div>
-            <div class="bet-controls">
-                <input type="number" id="crashBet" placeholder="Сумма ставки">
-                <button class="place-bet-btn" id="startCrash">Запустить</button>
-            </div>
+        <!-- Рулетка -->
+        <h3>Рулетка</h3>
+        <div class="roulette-wheel" id="roulette"></div>
+        <div class="bet-buttons">
+            <button class="bet-button" style="background: #e74c3c" onclick="placeBet('red')">Красное x2</button>
+            <button class="bet-button" style="background: #2c3e50" onclick="placeBet('black')">Черное x2</button>
         </div>
 
-        <!-- История ставок -->
-        <div class="history" id="history">
-            <h3>История игр</h3>
-            <div id="historyList"></div>
+        <!-- Crash -->
+        <h3>Crash</h3>
+        <div class="crash-graph">
+            <div class="crash-line" id="crashLine"></div>
+            <div id="crashMultiplier" style="position: absolute; right: 10px; top: 10px;">1.00x</div>
         </div>
+        <input type="number" id="crashBet" placeholder="Сумма ставки">
+        <button onclick="startCrash()" id="crashButton">Запустить</button>
+        <button onclick="cashOut()" class="hidden" id="cashOutButton">Забрать (1.00x)</button>
     </div>
 
     <script>
-        // Система частиц
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-
-        class Particle {
-            constructor() {
-                this.reset();
-            }
-            
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3;
-                this.speed = Math.random() * 0.5 + 0.5;
-                this.angle = Math.random() * Math.PI * 2;
-            }
-
-            update() {
-                this.x += Math.cos(this.angle) * this.speed;
-                this.y += Math.sin(this.angle) * this.speed;
-                
-                if (this.x < 0 || this.x > canvas.width || 
-                    this.y < 0 || this.y > canvas.height) {
-                    this.reset();
-                }
-            }
-
-            draw() {
-                ctx.fillStyle = `rgba(255,107,107,${this.size/3})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            for(let i = 0; i < 100; i++) {
-                particles.push(new Particle());
-            }
-            
-            animate();
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animate);
-        }
-
-        // Игровая логика
-        let balance = 100000;
-        let currentMode = 'roulette';
+        let currentUser = null;
+        let crashGameActive = false;
         let crashMultiplier = 1.0;
         let crashInterval;
 
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentMode = btn.dataset.mode;
-                document.getElementById('rouletteMode').style.display = 
-                    currentMode === 'roulette' ? 'grid' : 'none';
-                document.getElementById('crashMode').style.display = 
-                    currentMode === 'crash' ? 'block' : 'none';
-            });
-        });
+        // Инициализация рулетки
+        function initRoulette() {
+            const numbers = [
+                {num: 0, color: 'green'}, {num: 32, color: 'red'}, {num: 15, color: 'black'},
+                {num: 19, color: 'red'}, {num: 4, color: 'black'}, {num: 21, color: 'red'},
+                {num: 2, color: 'black'}, {num: 25, color: 'red'}, {num: 17, color: 'black'},
+                {num: 34, color: 'red'}, {num: 6, color: 'black'}, {num: 27, color: 'red'},
+                {num: 13, color: 'black'}, {num: 36, color: 'red'}, {num: 11, color: 'black'},
+                {num: 30, color: 'red'}, {num: 8, color: 'black'}, {num: 23, color: 'red'},
+                {num: 10, color: 'black'}, {num: 5, color: 'red'}, {num: 24, color: 'black'},
+                {num: 16, color: 'red'}, {num: 33, color: 'black'}, {num: 1, color: 'red'},
+                {num: 20, color: 'black'}, {num: 14, color: 'red'}, {num: 31, color: 'black'},
+                {num: 9, color: 'red'}, {num: 22, color: 'black'}, {num: 18, color: 'red'},
+                {num: 29, color: 'black'}, {num: 7, color: 'red'}, {num: 28, color: 'black'},
+                {num: 12, color: 'red'}, {num: 35, color: 'black'}, {num: 3, color: 'red'}
+            ];
 
-        // Рулетка
-        document.getElementById('placeBet').addEventListener('click', () => {
-            const betAmount = parseInt(document.getElementById('betAmount').value);
-            if (betAmount > balance) return alert('Недостаточно средств!');
-            
-            balance -= betAmount;
+            const wheel = document.getElementById('roulette');
+            numbers.forEach((num, index) => {
+                const angle = (index * 9.73) - 4.86;
+                const numElement = document.createElement('div');
+                numElement.className = `number ${num.color}`;
+                numElement.textContent = num.num;
+                numElement.style.transform = `rotate(${angle}deg) translate(150px)`;
+                wheel.appendChild(numElement);
+            });
+        }
+
+        // Ставка на рулетку
+        function placeBet(color) {
+            const betAmount = prompt("Введите сумму ставки:");
+            if(!betAmount || betAmount > currentUser.balance) return alert("Ошибка!");
+
+            currentUser.balance -= betAmount;
             updateBalance();
-            
-            const rotations = 4 + Math.random() * 4;
-            document.getElementById('rouletteWheel').style.transform = 
-                `rotate(${rotations * 360}deg)`;
+
+            const wheel = document.getElementById('roulette');
+            wheel.style.transform = `rotate(${1440 + Math.random() * 360}deg)`;
 
             setTimeout(() => {
-                const result = Math.random() < 0.5 ? 'win' : 'lose';
-                if (result === 'win') balance += betAmount * 2;
+                const resultNumber = Math.floor(Math.random() * 37);
+                const resultColor = resultNumber === 0 ? 'green' : 
+                                 resultNumber % 2 === 0 ? 'black' : 'red';
+                
+                if(resultColor === color) {
+                    currentUser.balance += betAmount * 2;
+                    alert(`Выигрыш! Выпало: ${resultNumber} (${resultColor})`);
+                } else {
+                    alert(`Проигрыш! Выпало: ${resultNumber} (${resultColor})`);
+                }
                 updateBalance();
-                addHistory(result, betAmount);
-            }, 4000);
-        });
+            }, 3000);
+        }
 
-        // Режим Crash
-        document.getElementById('startCrash').addEventListener('click', () => {
-            const betAmount = parseInt(document.getElementById('crashBet').value);
-            if (betAmount > balance) return alert('Недостаточно средств!');
-            
-            balance -= betAmount;
+        // Crash игра
+        function startCrash() {
+            const betAmount = document.getElementById('crashBet').value;
+            if(!betAmount || betAmount > currentUser.balance) return alert("Ошибка!");
+
+            currentUser.balance -= betAmount;
             updateBalance();
             
             crashMultiplier = 1.0;
-            const crashGraph = document.getElementById('crashGraph');
-            crashGraph.innerHTML = '<div class="crash-line"></div>';
-            
+            crashGameActive = true;
+            document.getElementById('crashButton').classList.add('hidden');
+            document.getElementById('cashOutButton').classList.remove('hidden');
+
             crashInterval = setInterval(() => {
-                crashMultiplier += 0.1;
-                if (Math.random() < 0.02) {
-                    clearInterval(crashInterval);
-                    setTimeout(() => {
-                        balance += betAmount * crashMultiplier;
-                        updateBalance();
-                        addHistory('crash', betAmount, crashMultiplier);
-                    }, 1000);
+                crashMultiplier += 0.01;
+                document.getElementById('crashLine').style.width = 
+                    `${Math.min(crashMultiplier * 3, 100)}%`;
+                document.getElementById('crashMultiplier').textContent = 
+                    crashMultiplier.toFixed(2) + 'x';
+                document.getElementById('cashOutButton').textContent = 
+                    `Забрать (${crashMultiplier.toFixed(2)}x)`;
+
+                if(Math.random() < 0.015) {
+                    endCrash(false);
                 }
-                crashGraph.querySelector('.crash-line').style.width = 
-                    `${Math.min(crashMultiplier * 10, 100)}%`;
             }, 100);
-        });
+        }
+
+        function cashOut() {
+            endCrash(true);
+        }
+
+        function endCrash(success) {
+            clearInterval(crashInterval);
+            crashGameActive = false;
+            const betAmount = document.getElementById('crashBet').value;
+            
+            if(success) {
+                currentUser.balance += betAmount * crashMultiplier;
+                alert(`Успешно! x${crashMultiplier.toFixed(2)}`);
+            } else {
+                alert(`Крах! Вы проиграли`);
+            }
+            
+            updateBalance();
+            document.getElementById('crashLine').style.width = '0';
+            document.getElementById('crashButton').classList.remove('hidden');
+            document.getElementById('cashOutButton').classList.add('hidden');
+        }
+
+        // Система пользователя
+        function register() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const user = {
+                email,
+                password,
+                balance: 0,
+                history: []
+            };
+
+            localStorage.setItem(email, JSON.stringify(user));
+            alert("Регистрация успешна!");
+        }
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const user = JSON.parse(localStorage.getItem(email));
+            
+            if(user && user.password === document.getElementById('password').value) {
+                currentUser = user;
+                document.getElementById('authForm').classList.add('hidden');
+                document.getElementById('gameContainer').classList.remove('hidden');
+                updateBalance();
+                initRoulette();
+            } else {
+                alert("Ошибка входа!");
+            }
+        }
 
         function updateBalance() {
-            document.getElementById('balance').textContent = 
-                balance.toLocaleString();
+            document.getElementById('balance').textContent = currentUser.balance;
+            localStorage.setItem(currentUser.email, JSON.stringify(currentUser));
         }
 
-        function addHistory(type, amount, multiplier = 1) {
-            const historyList = document.getElementById('historyList');
-            const entry = document.createElement('div');
-            entry.className = 'history-entry';
-            entry.innerHTML = type === 'crash' 
-                ? `🚀 Crash: ${multiplier.toFixed(2)}x +$${(amount * multiplier).toFixed(2)}`
-                : `🎰 ${type === 'win' ? 'Победа' : 'Проигрыш'}: $${amount}`;
-            historyList.prepend(entry);
+        // Как выдавать баланс (для админа):
+        /*
+        1. Откройте консоль браузера (F12)
+        2. Введите: addBalance('user@email.com', 1000)
+        3. Нажмите Enter
+        */
+        window.addBalance = function(email, amount) {
+            const user = JSON.parse(localStorage.getItem(email));
+            if(user) {
+                user.balance += amount;
+                localStorage.setItem(email, JSON.stringify(user));
+                console.log(`Баланс пополнен! ${email} +$${amount}`);
+            }
         }
-
-        // Инициализация
-        window.addEventListener('resize', initParticles);
-        initParticles();
-        updateBalance();
     </script>
 </body>
 </html>
