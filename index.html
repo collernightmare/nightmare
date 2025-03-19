@@ -2,299 +2,336 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Казино с режимами</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Casino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2ecc71;
-            --secondary: #e74c3c;
-            --background: #1a1a1a;
-            --panel: #2d2d2d;
+            --primary: #2A2F4D;
+            --accent: #FF6B6B;
+            --background: #1A1A24;
+            --glass: rgba(255,255,255,0.05);
+            --text: #F4F4F8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: Arial, sans-serif;
             background: var(--background);
-            color: white;
-            margin: 0;
-            padding: 20px;
+            color: var(--text);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Частицы */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
         }
 
+        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
 
-        .balance {
-            font-size: 24px;
-            color: var(--primary);
-        }
-
-        .modes {
+        /* Баланс */
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary), #3A3F5D);
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s;
+        }
+
+        /* Режимы игры */
+        .modes-tabs {
+            display: flex;
+            gap: 1rem;
         }
 
         .mode-btn {
-            background: var(--panel);
-            border: none;
-            padding: 10px 20px;
-            color: white;
-            border-radius: 5px;
+            background: none;
+            border: 2px solid var(--glass);
+            color: var(--text);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
             cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .mode-btn.active {
-            background: var(--primary);
-        }
-
-        .game-panel {
+        /* Основной игровой интерфейс */
+        .game-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
+            grid-template-columns: 3fr 1fr;
+            gap: 2rem;
         }
 
         /* Рулетка */
-        .wheel-container {
-            background: var(--panel);
-            padding: 20px;
-            border-radius: 10px;
+        .roulette-glass {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 2rem;
             position: relative;
         }
 
-        .wheel {
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
+        .roulette-wheel {
+            width: 500px;
+            height: 500px;
             margin: 0 auto;
             position: relative;
-            overflow: hidden;
-            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-
-        .number {
-            position: absolute;
-            width: 40px;
-            height: 40px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            transform-origin: 200px 200px;
+            background: conic-gradient(#FF6B6B, #2A2F4D 30deg, #FF6B6B 60deg, #2A2F4D 90deg, #FF6B6B 120deg, #2A2F4D 150deg, #FF6B6B 180deg, #2A2F4D 210deg, #FF6B6B 240deg, #2A2F4D 270deg, #FF6B6B 300deg, #2A2F4D 330deg);
+            transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        .red { background: #e74c3c; }
-        .black { background: #2c3e50; }
-        .green { background: #2ecc71; }
-
-        /* Ставки */
+        /* Панель ставок */
         .bet-controls {
-            background: var(--panel);
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        .bet-amount {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .bet-btn {
-            background: #34495e;
-            border: none;
-            padding: 10px;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background: #34495e;
-            border: none;
-            border-radius: 5px;
-            color: white;
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 20px;
         }
 
         /* Режим Crash */
         .crash-container {
             display: none;
-            background: var(--panel);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 25px;
         }
 
         .crash-graph {
-            width: 100%;
             height: 300px;
             background: #34495e;
-            margin: 20px 0;
-            border-radius: 10px;
+            border-radius: 20px;
+            margin: 2rem 0;
             position: relative;
-            overflow: hidden;
         }
 
-        .crash-multiplier {
-            font-size: 40px;
-            color: var(--primary);
-            margin: 20px 0;
-        }
-
+        /* История */
         .history {
-            background: var(--panel);
-            padding: 20px;
-            border-radius: 10px;
-            max-height: 500px;
-            overflow-y: auto;
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
         }
     </style>
 </head>
 <body>
+    <canvas id="particles"></canvas>
+    
     <div class="container">
-        <div class="header">
-            <div class="balance">Баланс: $<span id="balance">100000</span></div>
-            <div class="modes">
-                <button class="mode-btn active" onclick="switchMode('roulette')">Рулетка</button>
-                <button class="mode-btn" onclick="switchMode('crash')">Crash</button>
+        <header class="header">
+            <div class="balance-card">
+                <div class="balance">💰 $<span id="balance">100,000</span></div>
             </div>
-        </div>
+            <nav class="modes-tabs">
+                <button class="mode-btn active" data-mode="roulette">Рулетка</button>
+                <button class="mode-btn" data-mode="crash">Crash</button>
+            </nav>
+        </header>
 
         <!-- Режим Рулетки -->
-        <div id="rouletteMode">
-            <div class="game-panel">
-                <div class="wheel-container">
-                    <div class="wheel" id="wheel"></div>
+        <div class="game-grid" id="rouletteMode">
+            <div class="roulette-glass">
+                <div class="roulette-wheel" id="rouletteWheel"></div>
+            </div>
+            <div class="bet-controls">
+                <input type="number" id="betAmount" placeholder="Сумма ставки">
+                <div class="quick-bets">
+                    <button class="bet-chip" data-amount="1">+1</button>
+                    <button class="bet-chip" data-amount="10">+10</button>
+                    <button class="bet-chip" data-amount="100">+100</button>
+                    <button class="bet-chip" data-amount="1000">+1k</button>
                 </div>
-                <div class="bet-controls">
-                    <input type="number" id="betAmount" placeholder="Сумма ставки">
-                    <div class="bet-amount">
-                        <button class="bet-btn" onclick="adjustBet(1)">+1</button>
-                        <button class="bet-btn" onclick="adjustBet(10)">+10</button>
-                        <button class="bet-btn" onclick="adjustBet(100)">+100</button>
-                        <button class="bet-btn" onclick="adjustBet(1000)">+1k</button>
-                    </div>
-                    <button class="bet-btn" style="background: var(--primary); width: 100%">Сделать ставку</button>
-                </div>
+                <button class="place-bet-btn" id="placeBet">Сделать ставку</button>
             </div>
         </div>
 
         <!-- Режим Crash -->
-        <div id="crashMode" class="crash-container">
+        <div class="crash-container" id="crashMode">
             <div class="crash-graph" id="crashGraph"></div>
-            <div class="crash-multiplier" id="crashMultiplier">1.00x</div>
-            <input type="number" id="crashBet" placeholder="Сумма ставки">
-            <button class="bet-btn" style="background: var(--primary); width: 100%" onclick="startCrash()">Играть</button>
+            <div class="bet-controls">
+                <input type="number" id="crashBet" placeholder="Сумма ставки">
+                <button class="place-bet-btn" id="startCrash">Запустить</button>
+            </div>
         </div>
 
-        <div class="history" id="history"></div>
+        <!-- История ставок -->
+        <div class="history" id="history">
+            <h3>История игр</h3>
+            <div id="historyList"></div>
+        </div>
     </div>
 
     <script>
-        let balance = 100000;
-        let currentMode = 'roulette';
-        let crashGameActive = false;
-        
-        // Инициализация рулетки
-        function initWheel() {
-            const wheel = document.getElementById('wheel');
-            const numbers = [
-                {num: 0, color: 'green'}, {num: 32, color: 'red'}, {num: 15, color: 'black'},
-                {num: 19, color: 'red'}, {num: 4, color: 'black'}, {num: 21, color: 'red'},
-                {num: 2, color: 'black'}, {num: 25, color: 'red'}, {num: 17, color: 'black'},
-                {num: 34, color: 'red'}, {num: 6, color: 'black'}, {num: 27, color: 'red'},
-                {num: 13, color: 'black'}, {num: 36, color: 'red'}, {num: 11, color: 'black'},
-                {num: 30, color: 'red'}, {num: 8, color: 'black'}, {num: 23, color: 'red'},
-                {num: 10, color: 'black'}, {num: 5, color: 'red'}, {num: 24, color: 'black'},
-                {num: 16, color: 'red'}, {num: 33, color: 'black'}, {num: 1, color: 'red'},
-                {num: 20, color: 'black'}, {num: 14, color: 'red'}, {num: 31, color: 'black'},
-                {num: 9, color: 'red'}, {num: 22, color: 'black'}, {num: 18, color: 'red'},
-                {num: 29, color: 'black'}, {num: 7, color: 'red'}, {num: 28, color: 'black'},
-                {num: 12, color: 'red'}, {num: 35, color: 'black'}, {num: 3, color: 'red'}
-            ];
+        // Система частиц
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
 
-            numbers.forEach((number, index) => {
-                const angle = (index * 9.73) - 4.86;
-                const numElement = document.createElement('div');
-                numElement.className = `number ${number.color}`;
-                numElement.textContent = number.num;
-                numElement.style.transform = `rotate(${angle}deg) translate(150px)`;
-                wheel.appendChild(numElement);
-            });
-        }
-
-        // Режим Crash
-        function startCrash() {
-            if(crashGameActive) return;
+        class Particle {
+            constructor() {
+                this.reset();
+            }
             
-            const betAmount = parseInt(document.getElementById('crashBet').value);
-            if(!betAmount || betAmount > balance) {
-                alert('Неверная сумма ставки!');
-                return;
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3;
+                this.speed = Math.random() * 0.5 + 0.5;
+                this.angle = Math.random() * Math.PI * 2;
             }
 
-            crashGameActive = true;
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                
+                if (this.x < 0 || this.x > canvas.width || 
+                    this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(255,107,107,${this.size/3})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            for(let i = 0; i < 100; i++) {
+                particles.push(new Particle());
+            }
+            
+            animate();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        // Игровая логика
+        let balance = 100000;
+        let currentMode = 'roulette';
+        let crashMultiplier = 1.0;
+        let crashInterval;
+
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMode = btn.dataset.mode;
+                document.getElementById('rouletteMode').style.display = 
+                    currentMode === 'roulette' ? 'grid' : 'none';
+                document.getElementById('crashMode').style.display = 
+                    currentMode === 'crash' ? 'block' : 'none';
+            });
+        });
+
+        // Рулетка
+        document.getElementById('placeBet').addEventListener('click', () => {
+            const betAmount = parseInt(document.getElementById('betAmount').value);
+            if (betAmount > balance) return alert('Недостаточно средств!');
+            
             balance -= betAmount;
             updateBalance();
+            
+            const rotations = 4 + Math.random() * 4;
+            document.getElementById('rouletteWheel').style.transform = 
+                `rotate(${rotations * 360}deg)`;
 
-            let multiplier = 1.0;
-            const crashInterval = setInterval(() => {
-                multiplier += 0.1;
-                document.getElementById('crashMultiplier').textContent = multiplier.toFixed(2) + 'x';
-                
-                if(Math.random() < 0.02) {
+            setTimeout(() => {
+                const result = Math.random() < 0.5 ? 'win' : 'lose';
+                if (result === 'win') balance += betAmount * 2;
+                updateBalance();
+                addHistory(result, betAmount);
+            }, 4000);
+        });
+
+        // Режим Crash
+        document.getElementById('startCrash').addEventListener('click', () => {
+            const betAmount = parseInt(document.getElementById('crashBet').value);
+            if (betAmount > balance) return alert('Недостаточно средств!');
+            
+            balance -= betAmount;
+            updateBalance();
+            
+            crashMultiplier = 1.0;
+            const crashGraph = document.getElementById('crashGraph');
+            crashGraph.innerHTML = '<div class="crash-line"></div>';
+            
+            crashInterval = setInterval(() => {
+                crashMultiplier += 0.1;
+                if (Math.random() < 0.02) {
                     clearInterval(crashInterval);
-                    crashGameActive = false;
-                    const winAmount = Math.floor(betAmount * multiplier);
-                    balance += winAmount;
-                    updateBalance();
-                    addHistory(`Crash: +$${winAmount} (${multiplier.toFixed(2)}x)`);
+                    setTimeout(() => {
+                        balance += betAmount * crashMultiplier;
+                        updateBalance();
+                        addHistory('crash', betAmount, crashMultiplier);
+                    }, 1000);
                 }
+                crashGraph.querySelector('.crash-line').style.width = 
+                    `${Math.min(crashMultiplier * 10, 100)}%`;
             }, 100);
-        }
-
-        // Общие функции
-        function switchMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => 
-                btn.classList.remove('active'));
-            document.getElementById('rouletteMode').style.display = mode === 'roulette' ? 'block' : 'none';
-            document.getElementById('crashMode').style.display = mode === 'crash' ? 'block' : 'none';
-            document.querySelector(`button[onclick="switchMode('${mode}')"]`).classList.add('active');
-        }
-
-        function adjustBet(amount) {
-            const input = currentMode === 'roulette' ? 
-                document.getElementById('betAmount') : 
-                document.getElementById('crashBet');
-            input.value = parseInt(input.value || 0) + amount;
-        }
+        });
 
         function updateBalance() {
-            document.getElementById('balance').textContent = balance;
+            document.getElementById('balance').textContent = 
+                balance.toLocaleString();
         }
 
-        function addHistory(message) {
-            const history = document.getElementById('history');
+        function addHistory(type, amount, multiplier = 1) {
+            const historyList = document.getElementById('historyList');
             const entry = document.createElement('div');
-            entry.textContent = message;
-            history.prepend(entry);
+            entry.className = 'history-entry';
+            entry.innerHTML = type === 'crash' 
+                ? `🚀 Crash: ${multiplier.toFixed(2)}x +$${(amount * multiplier).toFixed(2)}`
+                : `🎰 ${type === 'win' ? 'Победа' : 'Проигрыш'}: $${amount}`;
+            historyList.prepend(entry);
         }
 
-        // Инициализация при загрузке
-        window.onload = initWheel;
+        // Инициализация
+        window.addEventListener('resize', initParticles);
+        initParticles();
+        updateBalance();
     </script>
 </body>
 </html>
