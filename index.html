@@ -3,217 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Casino</title>
+    <title>Neon Casino</title>
     <style>
         :root {
-            --primary: #2a2f4d;
-            --accent: #ff6b6b;
-            --background: #1a1a24;
-            --glass: rgba(255,255,255,0.05);
+            --neon-red: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --bg: #01012b;
+            --glass: rgba(255,255,255,0.1);
+            --text: #d1f7ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: var(--background);
-            color: white;
-            margin: 0;
-            padding: 20px;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
         }
 
-        .auth-form, .game-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
+        .auth-card {
             background: var(--glass);
-            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(5,217,232,0.2);
+            border: 1px solid var(--neon-blue);
+            margin-bottom: 3rem;
         }
 
-        .balance-section {
+        .auth-card h1 {
             text-align: center;
-            margin: 20px 0;
-            font-size: 24px;
+            margin-bottom: 2rem;
+            font-size: 2em;
+            background: linear-gradient(45deg, var(--neon-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border: 2px solid var(--neon-blue);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--neon-red);
+            color: white;
+            box-shadow: 0 0 20px rgba(255,42,109,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--neon-red);
+        }
+
+        .balance-card {
+            background: linear-gradient(45deg, #005678, #001436);
+            padding: 1.5rem 3rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 48%,
+                var(--neon-blue) 50%,
+                transparent 52%
+            );
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-50%) rotate(45deg); }
+            100% { transform: translateX(50%) rotate(45deg); }
+        }
+
+        .roulette-container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 2rem 0;
         }
 
         .roulette-wheel {
-            width: 400px;
-            height: 400px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            margin: 20px auto;
+            background: conic-gradient(
+                var(--neon-red) 0deg 180deg,
+                #1a1a24 180deg 360deg
+            );
+            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
             position: relative;
-            background: green;
-            transition: transform 3s;
+            overflow: hidden;
         }
-
-        .number {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            transform-origin: 200px 200px;
-        }
-
-        .red { background: #e74c3c; }
-        .black { background: #2c3e50; }
-        .green { background: #2ecc71; }
 
         .bet-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 20px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            width: 100%;
+            max-width: 400px;
         }
 
-        .bet-button {
-            padding: 15px 30px;
+        .bet-btn {
+            padding: 1.5rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bet-btn.red {
+            background: var(--neon-red);
+            box-shadow: 0 0 30px rgba(255,42,109,0.3);
+        }
+
+        .bet-btn.black {
+            background: #1a1a24;
+            box-shadow: 0 0 30px rgba(5,217,232,0.3);
+        }
+
+        .crash-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
         }
 
         .crash-graph {
             height: 200px;
-            background: #34495e;
-            border-radius: 10px;
-            margin: 20px 0;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
             position: relative;
             overflow: hidden;
         }
 
         .crash-line {
             height: 4px;
-            background: var(--accent);
+            background: var(--neon-blue);
+            width: 0;
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 0;
             transition: width 0.1s linear;
         }
     </style>
 </head>
 <body>
-    <!-- Авторизация -->
-    <div class="auth-form" id="authForm">
-        <h2>Вход / Регистрация</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Пароль">
-        <button onclick="login()">Войти</button>
-        <button onclick="register()">Зарегистрироваться</button>
+    <!-- Форма авторизации -->
+    <div class="auth-card">
+        <h1>NEON CASINO</h1>
+        <div class="input-group">
+            <input type="email" placeholder="Email" id="email">
+        </div>
+        <div class="input-group">
+            <input type="password" placeholder="Пароль" id="password">
+        </div>
+        <button class="btn btn-primary" onclick="login()">Войти</button>
+        <button class="btn btn-primary" onclick="register()">Регистрация</button>
     </div>
 
-    <!-- Игровая зона -->
-    <div class="game-container hidden" id="gameContainer">
-        <div class="balance-section">
-            Баланс: $<span id="balance">0</span>
-        </div>
+    <!-- Игровой интерфейс -->
+    <div class="balance-card">
+        <h2>Баланс: $<span id="balance">0</span></h2>
+    </div>
 
-        <!-- Рулетка -->
-        <h3>Рулетка</h3>
+    <div class="roulette-container">
         <div class="roulette-wheel" id="roulette"></div>
-        <div class="bet-buttons">
-            <button class="bet-button" style="background: #e74c3c" onclick="placeBet('red')">Красное x2</button>
-            <button class="bet-button" style="background: #2c3e50" onclick="placeBet('black')">Черное x2</button>
-        </div>
+    </div>
 
-        <!-- Crash -->
-        <h3>Crash</h3>
+    <div class="bet-buttons">
+        <button class="bet-btn red" onclick="placeBet('red')">Красное x2</button>
+        <button class="bet-btn black" onclick="placeBet('black')">Черное x2</button>
+    </div>
+
+    <div class="crash-container">
+        <h2>Crash</h2>
         <div class="crash-graph">
             <div class="crash-line" id="crashLine"></div>
-            <div id="crashMultiplier" style="position: absolute; right: 10px; top: 10px;">1.00x</div>
+            <div id="crashMultiplier" style="position: absolute; right: 20px; top: 20px; font-size: 2em; color: var(--neon-blue);">1.00x</div>
         </div>
-        <input type="number" id="crashBet" placeholder="Сумма ставки">
-        <button onclick="startCrash()" id="crashButton">Запустить</button>
-        <button onclick="cashOut()" class="hidden" id="cashOutButton">Забрать (1.00x)</button>
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <input type="number" id="crashBet" placeholder="Сумма" style="flex:1; padding: 1rem; border-radius: 10px; background: rgba(0,0,0,0.3); border: 2px solid var(--neon-blue); color: var(--text);">
+            <button class="btn btn-primary" onclick="startCrash()" id="crashButton">Старт</button>
+            <button class="btn btn-primary" onclick="cashOut()" id="cashOutButton" style="display: none;">Забрать</button>
+        </div>
     </div>
 
     <script>
+        // Игровая логика
         let currentUser = null;
-        let crashGameActive = false;
         let crashMultiplier = 1.0;
         let crashInterval;
 
-        // Инициализация рулетки
-        function initRoulette() {
-            const numbers = [
-                {num: 0, color: 'green'}, {num: 32, color: 'red'}, {num: 15, color: 'black'},
-                {num: 19, color: 'red'}, {num: 4, color: 'black'}, {num: 21, color: 'red'},
-                {num: 2, color: 'black'}, {num: 25, color: 'red'}, {num: 17, color: 'black'},
-                {num: 34, color: 'red'}, {num: 6, color: 'black'}, {num: 27, color: 'red'},
-                {num: 13, color: 'black'}, {num: 36, color: 'red'}, {num: 11, color: 'black'},
-                {num: 30, color: 'red'}, {num: 8, color: 'black'}, {num: 23, color: 'red'},
-                {num: 10, color: 'black'}, {num: 5, color: 'red'}, {num: 24, color: 'black'},
-                {num: 16, color: 'red'}, {num: 33, color: 'black'}, {num: 1, color: 'red'},
-                {num: 20, color: 'black'}, {num: 14, color: 'red'}, {num: 31, color: 'black'},
-                {num: 9, color: 'red'}, {num: 22, color: 'black'}, {num: 18, color: 'red'},
-                {num: 29, color: 'black'}, {num: 7, color: 'red'}, {num: 28, color: 'black'},
-                {num: 12, color: 'red'}, {num: 35, color: 'black'}, {num: 3, color: 'red'}
-            ];
-
-            const wheel = document.getElementById('roulette');
-            numbers.forEach((num, index) => {
-                const angle = (index * 9.73) - 4.86;
-                const numElement = document.createElement('div');
-                numElement.className = `number ${num.color}`;
-                numElement.textContent = num.num;
-                numElement.style.transform = `rotate(${angle}deg) translate(150px)`;
-                wheel.appendChild(numElement);
-            });
-        }
-
-        // Ставка на рулетку
         function placeBet(color) {
-            const betAmount = prompt("Введите сумму ставки:");
-            if(!betAmount || betAmount > currentUser.balance) return alert("Ошибка!");
-
-            currentUser.balance -= betAmount;
-            updateBalance();
-
+            const amount = prompt('Введите сумму ставки:');
+            if(!amount || amount > currentUser.balance) return alert('Ошибка!');
+            
             const wheel = document.getElementById('roulette');
-            wheel.style.transform = `rotate(${1440 + Math.random() * 360}deg)`;
-
+            wheel.style.transform = `rotate(${1440 + Math.random() * 360}deg`;
+            
             setTimeout(() => {
-                const resultNumber = Math.floor(Math.random() * 37);
-                const resultColor = resultNumber === 0 ? 'green' : 
-                                 resultNumber % 2 === 0 ? 'black' : 'red';
-                
-                if(resultColor === color) {
-                    currentUser.balance += betAmount * 2;
-                    alert(`Выигрыш! Выпало: ${resultNumber} (${resultColor})`);
+                const result = Math.random() < 0.5 ? 'red' : 'black';
+                if(result === color) {
+                    currentUser.balance += amount * 2;
+                    alert(`Выигрыш! Выпало: ${result}`);
                 } else {
-                    alert(`Проигрыш! Выпало: ${resultNumber} (${resultColor})`);
+                    alert(`Проигрыш! Выпало: ${result}`);
                 }
                 updateBalance();
             }, 3000);
         }
 
-        // Crash игра
         function startCrash() {
-            const betAmount = document.getElementById('crashBet').value;
-            if(!betAmount || betAmount > currentUser.balance) return alert("Ошибка!");
-
-            currentUser.balance -= betAmount;
-            updateBalance();
+            const amount = document.getElementById('crashBet').value;
+            if(!amount || amount > currentUser.balance) return alert('Ошибка!');
             
             crashMultiplier = 1.0;
-            crashGameActive = true;
-            document.getElementById('crashButton').classList.add('hidden');
-            document.getElementById('cashOutButton').classList.remove('hidden');
-
+            document.getElementById('crashButton').style.display = 'none';
+            document.getElementById('cashOutButton').style.display = 'block';
+            
             crashInterval = setInterval(() => {
                 crashMultiplier += 0.01;
                 document.getElementById('crashLine').style.width = 
                     `${Math.min(crashMultiplier * 3, 100)}%`;
                 document.getElementById('crashMultiplier').textContent = 
                     crashMultiplier.toFixed(2) + 'x';
-                document.getElementById('cashOutButton').textContent = 
-                    `Забрать (${crashMultiplier.toFixed(2)}x)`;
-
-                if(Math.random() < 0.015) {
-                    endCrash(false);
-                }
+                
+                if(Math.random() < 0.015) endCrash(false);
             }, 100);
         }
 
@@ -223,20 +291,15 @@
 
         function endCrash(success) {
             clearInterval(crashInterval);
-            crashGameActive = false;
-            const betAmount = document.getElementById('crashBet').value;
-            
+            const amount = document.getElementById('crashBet').value;
             if(success) {
-                currentUser.balance += betAmount * crashMultiplier;
-                alert(`Успешно! x${crashMultiplier.toFixed(2)}`);
-            } else {
-                alert(`Крах! Вы проиграли`);
+                currentUser.balance += amount * crashMultiplier;
+                alert(`Успех! x${crashMultiplier.toFixed(2)}`);
             }
-            
             updateBalance();
             document.getElementById('crashLine').style.width = '0';
-            document.getElementById('crashButton').classList.remove('hidden');
-            document.getElementById('cashOutButton').classList.add('hidden');
+            document.getElementById('crashButton').style.display = 'block';
+            document.getElementById('cashOutButton').style.display = 'none';
         }
 
         // Система пользователя
@@ -252,7 +315,8 @@
             };
 
             localStorage.setItem(email, JSON.stringify(user));
-            alert("Регистрация успешна!");
+            alert('Регистрация успешна!');
+            login();
         }
 
         function login() {
@@ -261,12 +325,10 @@
             
             if(user && user.password === document.getElementById('password').value) {
                 currentUser = user;
-                document.getElementById('authForm').classList.add('hidden');
-                document.getElementById('gameContainer').classList.remove('hidden');
+                document.querySelector('.auth-card').style.display = 'none';
                 updateBalance();
-                initRoulette();
             } else {
-                alert("Ошибка входа!");
+                alert('Ошибка входа!');
             }
         }
 
@@ -275,18 +337,13 @@
             localStorage.setItem(currentUser.email, JSON.stringify(currentUser));
         }
 
-        // Как выдавать баланс (для админа):
-        /*
-        1. Откройте консоль браузера (F12)
-        2. Введите: addBalance('user@email.com', 1000)
-        3. Нажмите Enter
-        */
-        window.addBalance = function(email, amount) {
+        // Админская команда для пополнения
+        window.addBalance = (email, amount) => {
             const user = JSON.parse(localStorage.getItem(email));
             if(user) {
                 user.balance += amount;
                 localStorage.setItem(email, JSON.stringify(user));
-                console.log(`Баланс пополнен! ${email} +$${amount}`);
+                console.log(`Баланс ${email} пополнен на $${amount}`);
             }
         }
     </script>
